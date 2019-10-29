@@ -25,12 +25,22 @@ import androidx.room.Query
 
 @Dao
 interface VideoDao {
-
-    // TODO (01) Update getVideos() to return the List as a LiveData.
-
     @Query("select * from databasevideo")
     fun getVideos(): LiveData<List<DatabaseVideo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg videos: DatabaseVideo)
 }
+
+// TODO (01) Create an abstract VideosDatabase class that extends RoomDatabase.
+
+// TODO (02) Annotate VideosDatabase with @Database,including entities and version.
+
+// TODO (03) Inside VideosDatabase, create abstract val videoDao.
+
+// TODO (04) Create an INSTANCE variable to store the VideosDatabase singleton.
+
+// TODO (05) Define a function getDatabase() that returns the VideosDatabase INSTANCE.
+
+// TODO (06) Inside getDatabase(), before returning INSTANCE, use a synchronized{} block to
+// check whether INSTANCE is initialized, and, if it isn’t, use DatabaseBuilder to create it.
