@@ -18,18 +18,15 @@
 package com.example.android.devbyteviewer.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.example.android.devbyteviewer.database.VideosDatabase
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.android.devbyteviewer.database.getDatabase
-import com.example.android.devbyteviewer.domain.Video
-import com.example.android.devbyteviewer.network.Network
-import com.example.android.devbyteviewer.network.asDomainModel
 import com.example.android.devbyteviewer.repository.VideosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /**
  * DevByteViewModel designed to store and manage UI-related data in a lifecycle conscious way. This
@@ -58,25 +55,19 @@ class DevByteViewModel(application: Application) : AndroidViewModel(application)
      */
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    // TODO (01) Remove _playlist, playlist variables, the init block,  and refreshDataFromNetwork() function.
+    private val database = getDatabase(application)
+    private val videosRepository = VideosRepository(database)
 
-
-
-    // TODO (02) Create a database variable and assign it to  getDatabase(), passing the application.
-    val database = getDatabase(application)
-    // TODO (03) Define a videosRepository by calling the constructor and passing in the database.
-    val repository = VideosRepository(database)
-
-    // TODO (04) Create an init block and launch a coroutine to call videosRepository.refreshVideos().
+    /**
+     * init{} is called immediately when this ViewModel is created.
+     */
     init {
         viewModelScope.launch {
-            repository.refreshVideos()
+            videosRepository.refreshVideos()
         }
     }
 
-    // TODO (05) Get videos from the repository and assign it to a playlist variable.
-    val playList = repository.videos
-
+    val playlist = videosRepository.videos
 
     /**
      * Cancel all coroutines when the ViewModel is cleared
@@ -88,7 +79,7 @@ class DevByteViewModel(application: Application) : AndroidViewModel(application)
 
     /**
      * Factory for constructing DevByteViewModel with parameter
-      */
+     */
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DevByteViewModel::class.java)) {
